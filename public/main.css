@@ -1,0 +1,175 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: Inter, sans-serif;
+    color: snow;
+}
+
+@font-face {
+    font-family: Inter, sans-serif;
+    src: url(../public/fonts/Inter.ttf);
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+}
+
+.box{
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgb(197, 5, 231) 20%, rgb(129, 5, 231) 40%, rgb(68, 74, 179) 60%,rgb(98, 106, 244) 80%, rgb(154, 159, 255) 100%);
+    background-size: 400% 400%;
+    animation: moveGradient 30s linear infinite; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@keyframes moveGradient {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 100% 100%;
+    }
+    100%{
+        background-position: 0% 0%;
+    }
+  }
+
+  header{
+    height: 15%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h1{
+    font-size: 3vmax;
+    border-left: 5px solid snow;
+    border-right: 5px solid snow;
+    padding: 0 1.5vmax;
+  }
+
+  header i{
+    color: rgba(255, 250, 250, .7);
+    position: absolute;
+    top: 2%;
+    left: 97%;
+    width: 2%;
+    height: 2%;
+    transition: 1s ease-out;
+  }
+
+  header i:hover{
+    transition: 0s ease-in;
+    color: snow;
+  }
+  
+  main{
+    height: 60%;
+    width: 75%;
+    border-left: .5vmax solid snow;
+    border-right: .5vmax solid snow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mbox{
+    height: 100%;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .mboxchild{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .mheader{
+    width: 50%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    background: snow;
+    clip-path: polygon(0% 0%, 100% 0, 92% 100%, 0% 100%);
+    padding: .5vmax;
+
+  }
+
+  .mheader a{
+    padding-left: 5%;
+  }
+
+  i{
+    color: black;
+    font-size: 3vmax;
+    width: 90%;
+    height: 80%;
+  }
+
+  .mlabel{
+    position: relative;
+    flex-basis: 50%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 250, 250, .2);
+    clip-path: polygon(10% 0%, 100% 0, 100% 100%, 0% 100%);
+    padding: 1vmax;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mlabelchild{
+    flex-basis: 90%;
+    height: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    background-color: rgba(255, 250, 250, .5);
+    clip-path: polygon(9% 0%, 100% 0, 100% 100%, 0% 100%);
+    padding: 1vmax;
+  }
+
+  .mlabelchild p{
+    font-weight: bolder;
+    font-size: 1.5vmax;
+  }
+
+  footer{
+    height: 15%;
+    width: 100%;
+    background-color: #25279B;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fterLine{
+    width: .2vmax;
+    height: 90%;
+    background-color: snow;
+    margin: 0 1vmax;
+    border-radius: 10%;
+  }
+
+  p{
+    font-size: 1vmax;
+  }
+
+  img{
+    width: 5%;
+    height: 50%;
+  }
