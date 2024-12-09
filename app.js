@@ -5,6 +5,7 @@ require('dotenv').config();
 const cnctString = process.env.DATABASE_CONNECTION;
 const path = require('path');
 const mongoose = require('mongoose');
+const User = require('./models/User');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const ePass = process.env.APP_PASSWORD;
@@ -15,14 +16,6 @@ mongoose.connect(cnctString, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then(() => console.log("Connected to MongoDB!")).catch((err) => console.error('MongoDB connection error: ', err));
-
-// Define User Schema and Model
-const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-});
-
-const User = mongoose.model('User', userSchema);
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,10 +51,6 @@ app.get('/index.html', (req, res) => {
 app.get('/rejestracja.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'rejestracja.html'));
 });
-
-app.get('/weryfikacja.html', (req,res)=>{
-  res.sendFile(path.join(__dirname, 'views', 'weryfikacja.html'));
-})
 
 app.get('/main.html',isAuthenticated, (req,res)=>{
     res.sendFile(path.join(__dirname, 'views', 'main.html'));
@@ -121,20 +110,78 @@ app.post('/register', async (req, res) => {
         //generate a 6 digit random verification code
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); 
 
+            // Save the code and user info in session
+        req.session.verificationCode = verificationCode; 
+        req.session.userData = { email, password }; 
+        req.session.verificationCodeExpires = Date.now() + 120000; // Set expiration time for 2 minutes
 
-        // Hash the password (use a valid salt round, e.g., 10)
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // Send verification email
+        const mailOptions = {
+          from: 'techdziennik@gmail.com',
+          to: email,
+          subject: 'Verification Code',
+          text: `Your verification code is: ${verificationCode}` 
+        };
 
-        // Save the user to the database
-        const newUser = new User({ email, password: hashedPassword });
-        await newUser.save();
+        transporter.sendMail(mailOptions, (error, info) => { 
+          if (error) {
+            console.error('Error sending email:', error); // Log the error details 
+            return res.status(500).send('Error sending email');
+          }
+          // Redirect to verification page
+          res.redirect('/weryfikacja.html'); 
+        });
 
-        // Send a success response
-        res.status(201).send('User registered successfully!');
     } catch (err) {
         console.error('Error during registration:', err);
         res.status(500).send('Internal server error');
     }
+});
+
+app.get('/weryfikacja.html', (req,res)=>{
+  try {
+    res.sendFile(path.join(__dirname, 'views', 'weryfikacja.html')); // Correct path to weryfikacja.html 
+  } catch (err) {
+    console.error('Error in /weryfikacja.html route:', err);
+    res.status(500).send('Something went wrong!');
+  }
+});
+
+// Route for verification form submission
+app.post('/weryfikacja', async (req, res) => {
+  try {
+    const { code } = req.body;
+    const { verificationCode, userData, verificationCodeExpires } = req.session;
+
+    if (!verificationCode || !userData) {
+      return res.status(400).send('Session data missing. Please try registering again.');
+    }
+
+    if (Date.now() > verificationCodeExpires) {
+      return res.status(400).send('Verification code expired');
+    }
+
+    if (code === verificationCode) {
+      // Save user to the database
+      const newUser = new User(userData); // Correct usage of User model 
+      await newUser.save();
+
+      // Clear session data
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Error destroying session:', err); 
+        }
+      });
+
+      // Redirect to login page
+      res.redirect('/index.html'); 
+    } else {
+      res.status(400).send('Invalid verification code');
+    }
+  } catch (err) {
+    console.error('Error in /weryfikacja route:', err);
+    res.status(500).send('Something went wrong!');
+  }
 });
 
 app.post('/login', async(req, res) => {
