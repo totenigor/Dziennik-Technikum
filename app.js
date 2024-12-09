@@ -227,6 +227,16 @@ app.post('/login', async(req, res) => {
     }
 });
 
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.redirect('/main.html');
+    }
+    res.clearCookie('connect.sid');
+    return res.redirect('/index.html');
+  });
+});
+
 
 // Start the server
 app.listen(port, () => {
