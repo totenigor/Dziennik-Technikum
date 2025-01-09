@@ -6,6 +6,8 @@ const cnctString = process.env.DATABASE_CONNECTION;
 const path = require('path');
 const mongoose = require('mongoose');
 const User = require('./models/User');
+const Grade = require('./models/Grades');
+const Note = require('./models/Notes');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const ePass = process.env.APP_PASSWORD;
@@ -56,6 +58,13 @@ app.get('/main.html',isAuthenticated, (req,res)=>{
     res.sendFile(path.join(__dirname, 'views', 'main.html'));
 })
 
+app.get('/dodajocene.html',isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'nauczyciel','dodajocene.html'));
+})
+
+app.get('/dodajuwage.html',isAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'nauczyciel','dodajuwage.html'));
+})
 // POST route for handling form submission
 app.post('/register', async (req, res) => {
     const { email, password, repeat_password } = req.body;
@@ -196,6 +205,11 @@ app.post('/login', async(req, res) => {
                     unhashedPassword: password
                 };
                 return res.redirect('/main.html');
+                if(email.indexOf('nauczyciel') > -1){
+                  //routy dla nauczyciela
+                }else{
+                  //routy dla ucznia
+                }            
             }else {
                 return res.send(` 
                     <html>
@@ -237,6 +251,70 @@ app.get('/logout', (req, res) => {
   });
 });
 
+app.post('/addgrade', async (req, res) => {
+  // Destructure the data from the request body
+  const { emailucznia, przedmiot, ocena } = req.body;
+
+  // Create a new student document
+  const newGrade = new Grade({
+      email: emailucznia, // Use the email from the form
+      przedmiot: przedmiot,
+      ocena: ocena,
+  });
+
+  try {
+      // Save the new student document to the database
+      await newGrade.save();
+      // Redirect or send a success response
+      return res.send(`
+        <html>
+        <head>
+          <script>
+            alert("Dodano ocene!");
+            window.location.href = '/dodajocene.html';
+          </script>
+        </head>
+        <body></body>
+      </html>`);
+  } catch (error) {
+      // Handle errors (e.g., duplicate email)
+      console.error(error);
+      res.status(500).send('Error adding grade: ' + error.message);
+  }
+});
+
+app.post('/addnote', async (req, res) => {
+    // Destructure the data from the request body
+    const { emailucznia, przedmiot, uwaga, posneg } = req.body;
+
+    // Create a new note document
+    const newNote = new Note({ // Use 'Notes' here
+        email: emailucznia, // Use the email from the form
+        przedmiot: przedmiot,
+        uwaga: uwaga,
+        typ: posneg,
+    });
+
+    try {
+        // Save the new note document to the database
+        await newNote.save();
+        // Redirect or send a success response
+        return res.send(`
+          <html>
+          <head>
+            <script>
+              alert("Dodano uwage!");
+              window.location.href = '/dodajuwage.html';
+            </script>
+          </head>
+          <body></body>
+        </html>`);
+    } catch (error) {
+        // Handle errors (e.g., duplicate email)
+        console.error(error);
+        res.status(500).send('Error adding note: ' + error.message);
+    }
+});
 
 // Start the server
 app.listen(port, () => {
