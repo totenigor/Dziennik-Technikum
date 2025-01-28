@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>frekwencja</title>
+</head>
+<body>
+    <div class="box">
+        <div class="iconBox">
+            <i class="fa-solid fa-user"></i>
+            <i class="fa-solid fa-plus"></i>
+        </div>
+        <h1>Dodaj frekwencje!</h1>
+        <form action="/addpresent" method="POST">
+            <input type="email" name="emailucznia" placeholder="e-mail ucznia" required>
+            <input type="text" name="przedmiot" placeholder="przedmiot" required>
+            <input type="text" name="data" required>
+            <input type="number" name="ktrlekcja" min="0" max="9" required>
+            <input type="radio" name="posneg" value="Obecny">
+            <label for="posneg">Obecny</label>
+            <input type="radio" name="posneg" value="Nieobecny">
+            <label for="posneg">Nieobecny</label>
+            <input type="submit" value="Dodaj frekwencje">
+    </form>
+    </div>
+</body>
+</html>
